@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title layout:title-pattern="$LAYOUT_TITLE - MyDarkSite">MyDarkSite</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+
+    <div layout:fragment="header" th:replace="header :: header"></div>
+
+    <main layout:fragment="content">
+        <!-- 각 페이지의 내용이 들어올 영역 -->
+    </main>
+
+    <div layout:fragment="footer" th:replace="footer :: footer"></div>
+
+</body>
+</html>
