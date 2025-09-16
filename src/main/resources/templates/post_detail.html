@@ -12,14 +12,19 @@
       <div class="badge-wrapper mt-3">
         <div class="meta-author">
           <span th:if="${post.writer != null}" th:text="${post.writer.username}"></span><br />
-          <span th:text="${#temporals.format(post.createdate, 'yyyy-MM-dd HH:mm')}">질문등록일</span>
+          <span th:text="${#temporals.format(post.createdate.atZone(T(java.time.ZoneId).of('UTC'))
+                                                .withZoneSameInstant(T(java.time.ZoneId).of('Asia/Seoul')),
+                                                'yyyy-MM-dd HH:mm')}">질문등록일</span>
         </div>
 
         <div th:if="${post.modifydate != null}" class="meta-dates">
           <div>질문 수정 일시</div>
-          <div th:text="${#temporals.format(post.modifydate, 'yyyy-MM-dd HH:mm')}"></div>
+          <div th:text="${#temporals.format(post.modifydate.atZone(T(java.time.ZoneId).of('UTC'))
+                                                .withZoneSameInstant(T(java.time.ZoneId).of('Asia/Seoul')),
+                                                'yyyy-MM-dd HH:mm')}"></div>
         </div>
       </div>
+
 
       <div class="my-3 action-buttons">
         <!-- 질문 추천 버튼 -->
@@ -62,12 +67,16 @@
         <div class="badge-wrapper mt-3">
           <div class="meta-author">
             <span th:if="${comment.writer != null}" th:text="${comment.writer.username}"></span><br />
-            <span th:text="${#temporals.format(comment.createdate, 'yyyy-MM-dd HH:mm')}">작성일</span>
+            <span th:text="${#temporals.format(comment.createdate.atZone(T(java.time.ZoneId).of('UTC'))
+                                                .withZoneSameInstant(T(java.time.ZoneId).of('Asia/Seoul')),
+                                                'yyyy-MM-dd HH:mm')}">작성일</span>
           </div>
 
           <div th:if="${comment.modifydate != null}" class="meta-dates">
             <div>답변 수정 일시</div>
-            <div th:text="${#temporals.format(comment.modifydate, 'yyyy-MM-dd HH:mm')}"></div>
+            <div th:text="${#temporals.format(comment.modifydate.atZone(T(java.time.ZoneId).of('UTC'))
+                                                .withZoneSameInstant(T(java.time.ZoneId).of('Asia/Seoul')),
+                                                'yyyy-MM-dd HH:mm')}"></div>
           </div>
         </div>
 
