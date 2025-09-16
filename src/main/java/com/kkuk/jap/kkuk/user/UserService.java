@@ -21,7 +21,7 @@ public class UserService {
 	private PasswordEncoder passwordEncoder;
 	
 	
-	public User create(String username, String password, String email) {
+	public User create(String username, String email, String password) {
 		User user = new User();
 		user.setUsername(username);
 		user.setEmail(email);

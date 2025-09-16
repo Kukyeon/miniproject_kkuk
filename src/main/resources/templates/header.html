@@ -1,16 +1,54 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="ko">
-<body>
-    <header th:fragment="header" class="navbar">
-        <div class="logo">MyDarkSite</div>
-        <nav>
-            <ul class="nav-links">
-                <li><a href="/">홈</a></li>
-                <li><a href="#">소개</a></li>
-                <li><a href="#">서비스</a></li>
-                <li><a href="#">문의</a></li>
-            </ul>
-        </nav>
-    </header>
-</body>
-</html>
+<header th:fragment="header" class="navbar">
+  <div class="logo">
+    <a href="/" style="text-decoration: none; color: white;">MyDarkSite</a>
+  </div>
+
+  <!-- 햄버거 버튼 -->
+  <button class="hamburger" id="hamburgerBtn" aria-label="메뉴 열기">
+    &#9776; <!-- ☰ -->
+  </button>
+
+  <!-- 네비게이션 메뉴 -->
+  <nav id="navMenu" class="nav-links" role="navigation">
+    <ul>
+      <li><a href="/" th:href="@{/}">홈</a></li>
+      <li><a href="/posts" th:href="@{/post/list}">게시판</a></li>
+
+      <li th:if="${#authorization.expression('isAuthenticated()')}">
+        <a href="/mypage" th:href="@{/user/mypage}">마이페이지</a>
+      </li>
+      <li th:if="${not #authorization.expression('isAuthenticated()')}">
+        <a href="/signup" th:href="@{/user/signup}">회원가입</a>
+      </li>
+
+      <li th:if="${not #authorization.expression('isAuthenticated()')}">
+        <a href="/login" th:href="@{/user/login}">로그인</a>
+      </li>
+      <li th:if="${#authorization.expression('isAuthenticated()')}">
+        <a href="/logout" id="logoutBtn" th:href="@{/user/logout}">로그아웃</a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- 로그아웃 확인 -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const logoutBtn = document.getElementById('logoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          if (confirm('정말 로그아웃 하시겠습니까?')) {
+            window.location.href = this.getAttribute('href');
+          }
+        });
+      }
+
+      // 햄버거 메뉴 toggle
+      const hamburger = document.getElementById('hamburgerBtn');
+      const navMenu = document.getElementById('navMenu');
+      hamburger.addEventListener('click', function () {
+        navMenu.classList.toggle('active');
+      });
+    });
+  </script>
+</header>

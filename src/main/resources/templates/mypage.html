@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" lang="ko">
+<head><title layout:title="마이페이지"></title></head>
+<body>
+<div layout:fragment="content" class="container">
+    <h2>내 정보</h2>
+    <p>아이디: <span th:text="${user.username}"></span></p>
+    <p>이메일: <span th:text="${user.email}"></span></p>
+
+   
+</div>
+</body>
+</html>

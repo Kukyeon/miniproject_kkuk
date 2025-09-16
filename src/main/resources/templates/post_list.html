@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title layout:title="게시판 목록"></title>
+</head>
+<body>
+<div layout:fragment="content" class="container">
+    <h2>게시판</h2>
+
+    <!-- 🔍 검색창 + ✍ 글쓰기 버튼 -->
+    <div class="my-3" style="display: flex; justify-content: space-between; align-items: center;">
+        <form th:action="@{/post/list}" method="get" style="display: flex; gap: 0.5rem;">
+            <input type="text" name="kw" class="input-dark" placeholder="검색어를 입력하세요" th:value="${kw}">
+            <button type="submit" class="btn-dark">검색</button>
+        </form>
+
+        <!-- 로그인 사용자만 글쓰기 가능 -->
+        <div th:if="${#authorization.expression('isAuthenticated()')}">
+            <a th:href="@{/post/create}" class="btn-dark">글쓰기</a>
+        </div>
+    </div>
+
+    <!-- 📋 게시글 리스트 -->
+    <table class="post-table">
+        <thead>
+            <tr>
+                <th>번호</th>
+                <th style="width: 50%;">제목</th>
+                <th>작성자</th>
+                <th>조회수</th>
+                <th>작성일</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="post, loop : ${postPage}">
+                <td th:text="${postPage.getTotalElements - loop.index - (postPage.number * postPage.size)}"></td>
+                <td><a th:href="@{|/post/detail/${post.id}|}" th:text="${post.subject}"></a>
+                	<span class="text-danger small ms-2" 
+					th:if="${#lists.size(post.commentList) > 0}"
+					th:text="'[' + ${#lists.size(post.commentList)} + ']'"></span>
+                </td>
+                <td th:if="${post.writer != null}" th:text="${post.writer.username}"></td>
+                <td>
+					<span th:text="${post.hit}"></span>
+				</td>
+                <td th:text="${#temporals.format(post.createdate.atZone(T(java.time.ZoneId).of('UTC'))
+                                                .withZoneSameInstant(T(java.time.ZoneId).of('Asia/Seoul')),
+                                                'yyyy-MM-dd HH:mm')}">등록일</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- 🔁 페이징 -->
+    <div class="mt-3 text-center">
+		 <ul class="pagination-custom">
+		  
+		    <!-- 이전 페이지 -->
+		    <li th:classappend="${!postPage.hasPrevious} ? 'disabled'">
+		      <a class="page-link"
+		         th:href="@{/post/list(page=${postPage.number - 1}, kw=${kw})}">
+		        <span>이전</span>
+		      </a>
+		    </li>
+		
+		    <!--  페이지 번호 리스트 -->
+		    <li th:each="page : ${#numbers.sequence(0, postPage.totalPages - 1)}"
+		        th:if="${page >= postPage.number - 5 and page <= postPage.number + 5}"
+		        th:classappend="${page == postPage.number} ? 'active'"
+		        class="page-item">
+		      <a class="page-link"
+		         th:href="@{/post/list(page=${page}, kw=${kw})}"
+		         th:text="${page + 1}">
+		         페이지
+		      </a>
+		    </li>
+		
+		    <!--  다음 페이지 -->
+		    <li th:classappend="${!postPage.hasNext} ? 'disabled'">
+		      <a class="page-link"
+		         th:href="@{/post/list(page=${postPage.number + 1}, kw=${kw})}">
+		        <span>다음</span>
+		      </a>
+		    </li>
+		    
+		 </ul>
+	</div>
+
+    <form th:action="@{/post/list}" method="get" id="searchForm">
+		<input type="hidden" id="page" name="page" th:value="${postPage.number}">
+		<input type="hidden" id="kw" name="kw" th:value="${kw}">
+	</form>
+</div>
+</body>
+</html>

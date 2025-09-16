@@ -1,21 +1,49 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      lang="ko">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" lang="ko">
 <head>
     <meta charset="UTF-8">
+     <base th:href="@{/}" />
     <title layout:title-pattern="$LAYOUT_TITLE - MyDarkSite">MyDarkSite</title>
     <link rel="stylesheet" th:href="@{/styles.css}">
 </head>
 <body>
 
-    <div layout:fragment="header" th:replace="header :: header"></div>
+<!-- Header Fragment -->
+<div th:replace="header :: header"></div>
 
-    <main layout:fragment="content">
-        <!-- 각 페이지의 내용이 들어올 영역 -->
-    </main>
+<!-- Page Content -->
+<main layout:fragment="content"></main>
 
-    <div layout:fragment="footer" th:replace="footer :: footer"></div>
+<!-- 자바스크립트 start -->
+	<th:block layout:fragment="script"></th:block>
+	<!-- 자바스크립트 end -->
+
+<!-- Footer Fragment -->
+<div th:replace="footer :: footer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<div th:if="${param.login}">
+  <script th:inline="javascript">
+    Swal.fire({
+      icon: 'success',
+      title: '로그인 성공!',
+      confirmButtonText: '확인'
+    });
+  </script>
+</div>
+
+<div th:if="${param.logout}">
+  <script th:inline="javascript">
+    Swal.fire({
+      icon: 'success',
+      title: '로그아웃 되었습니다',
+      confirmButtonText: '확인'
+    });
+  </script>
+</div>
+
 
 </body>
 </html>

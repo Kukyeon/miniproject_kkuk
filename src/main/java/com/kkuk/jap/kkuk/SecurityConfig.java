@@ -27,10 +27,10 @@ public class SecurityConfig {
 	               .requestMatchers(new AntPathRequestMatcher("/**")).permitAll())
 	        .formLogin((formLogin) -> formLogin //스프링 시큐리티에서 로그인 설정
 	        	.loginPage("/user/login") // 로그인 요청
-	        	.defaultSuccessUrl("/")) // 로그인 성공시 이동페이지 지정
+	        	.defaultSuccessUrl("/?login=true", true)) // 로그인 성공시 이동페이지 지정
 	        .logout((logout) -> logout
 	        		.logoutRequestMatcher(new AntPathRequestMatcher("/user/logout")) //로그아웃 요청
-	        		.logoutSuccessUrl("/") // 로그아웃 성공시 이동할 페이지
+	        		.logoutSuccessUrl("/?logout=true") // 로그아웃 성공시 이동할 페이지
 	        		.invalidateHttpSession(true)) 
 	        
 	         ;

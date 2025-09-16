@@ -9,9 +9,13 @@ public class MainController {
 
 	
 	    @GetMapping("/")
-	    public String index() {
+	    public String root() {
 	        return "index";
 	    }
-	
+	    
+//	    @GetMapping("/index")
+//	    public String index() {
+//	        return "index";
+//	    }
 
 }
