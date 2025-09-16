@@ -35,7 +35,7 @@ public class CommentController {
 	private UserService userService;
 	
 	@PreAuthorize("isAuthenticated()")
-	@PostMapping(value = "/create/{id}")
+	@PostMapping(value = "/create/{id}") // 아이디 값으로 댓글
 	public String createComment(Model model, @PathVariable("id")Integer id, Principal principal, 
 			@Valid CommentForm commentForm, BindingResult bindingResult) {
 		Post post = postService.getPost(id);
@@ -48,7 +48,7 @@ public class CommentController {
 		return String.format("redirect:/post/detail/%s#comment_%s", id, comment.getId());
 	}
 	
-	@GetMapping(value = "/modify/{id}")
+	@GetMapping(value = "/modify/{id}") // 아이디값으로 수정/삭제
 	public String commentModify(CommentForm commentForm, @PathVariable("id")Integer id, Principal principal) {
 		Comment comment = commentService.getComment(id);
 		if(!comment.getWriter().getUsername().equals(principal.getName())) {
@@ -58,7 +58,7 @@ public class CommentController {
 		return "comment_form";
 	}
 	
-	@PostMapping(value = "/modify/{id}")
+	@PostMapping(value = "/modify/{id}") // 아이디값으로 수정/삭제
 	public String commentModify(@Valid CommentForm commentForm, BindingResult bindingResult,
 			@PathVariable("id")Integer id, Principal principal) {
 		if(bindingResult.hasErrors()) {
@@ -73,7 +73,7 @@ public class CommentController {
 		return String.format("redirect:/post/detail/%s", comment.getPost().getId());
 	}
 	
-	@GetMapping(value = "/delete/{id}")
+	@GetMapping(value = "/delete/{id}") // 아이디 값으로 삭제
 	public String commentDelete(Principal principal, @PathVariable("id")Integer id) {
 		Comment comment = commentService.getComment(id);
 		
@@ -84,7 +84,7 @@ public class CommentController {
 		return String.format("redirect:/post/detail/%s", comment.getPost().getId());
 	}
 	
-	@GetMapping(value = "/vote/{id}")
+	@GetMapping(value = "/vote/{id}") // 아이디값으로 추천 비추천
 	public String commentVote(@PathVariable("id")Integer id, Principal principal) {
 		Comment comment = commentService.getComment(id);
 		User user = userService.getUser(principal.getName());

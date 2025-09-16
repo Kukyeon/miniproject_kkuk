@@ -47,22 +47,22 @@ public class PostController {
 		return "post_list";
 	}
 	
-	@GetMapping(value = "/detail/{id}")
+	@GetMapping(value = "/detail/{id}") // 게시글 상세
 	public String detail(Model model, @PathVariable("id") Integer id, CommentForm commentForm) {
 		
-		postService.hit(id);
+		postService.hit(id); // 조회수
 		
 		Post post = postService.getPost(id);
 		model.addAttribute("post", post);
 		return "post_detail";
 	}
 	
-	@GetMapping(value = "/create")
+	@GetMapping(value = "/create") // 게시글 작성 띄워주는
 	public String postCreate(PostForm postForm) {
 		return "post_form";
 	}
 	
-	@PostMapping(value = "/create")
+	@PostMapping(value = "/create") // 게시글 작성 보내기
 	public String postCreate(@Valid PostForm postForm, BindingResult bindingResult,  Principal principal) {
 		
 		if(bindingResult.hasErrors()) {
@@ -76,7 +76,7 @@ public class PostController {
 		return "redirect:/post/list";
 	}
 	
-	@GetMapping(value = "/modify/{id}")
+	@GetMapping(value = "/modify/{id}") // 수정 띄워주기
 	public String postModify(PostForm postForm, @PathVariable("id")Integer id, Principal principal) {
 		Post post = postService.getPost(id);
 		
@@ -90,7 +90,7 @@ public class PostController {
 		return "post_form";
 	}
 	
-	@PostMapping(value = "/modify/{id}")
+	@PostMapping(value = "/modify/{id}") // 수정내역 보내기
 	public String postModify(@Valid PostForm postForm, BindingResult bindingResult,
 			Principal principal, @PathVariable("id")Integer id) {
 		
