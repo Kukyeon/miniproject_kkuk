@@ -11,7 +11,7 @@
   <!-- 네비게이션 메뉴 -->
   <nav id="navMenu" class="nav-links" role="navigation">
     <ul>
-      <li><a href="/" th:href="@{/}">홈</a></li>
+      <li><a href="/kkukProject" th:href="@{/kkukProject}">홈</a></li>
       <li><a href="/posts" th:href="@{/post/list}">게시판</a></li>
 
       <li th:if="${#authorization.expression('isAuthenticated()')}">

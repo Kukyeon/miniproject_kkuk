@@ -4,7 +4,7 @@
 <body>
 <div layout:fragment="content" class="form-wrapper">
     <h2>회원가입</h2>
-    <form th:action="@{user/signup}" th:object="${userCreateForm}" method="post">
+    <form th:action="@{/user/signup}" th:object="${userCreateForm}" method="post">
        <div th:replace="form_errors :: formErrorsFragment"></div>
        
 
