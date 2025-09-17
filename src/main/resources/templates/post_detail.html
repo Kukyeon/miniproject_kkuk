@@ -1,150 +1,175 @@
-<html layout:decorate="~{layout}">
-  <div layout:fragment="content" class="container my-3">
 
-    <!-- 게시글 상세 영역 -->
-    <div class="post-detail-container">
-      <h2 class="post-title" th:text="${post.subject}">제목</h2>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<div layout:fragment="content" class="container my-3">
 
-      <div class="post-content" th:text="${post.content}" style="white-space: pre-line;">
-        내용
+  <!-- 게시글 상세 -->
+  <div class="post-detail-container">
+    <h2 class="post-title" th:text="${post.subject}">제목</h2>
+
+    <div class="post-content" th:text="${post.content}" style="white-space: pre-line;">
+      내용
+    </div>
+
+    <div class="badge-wrapper mt-3">
+      <div class="meta-author">
+        <span th:if="${post.writer != null}" th:text="${post.writer.username}"></span><br />
+        <span th:text="${#temporals.format(post.createdate.atZone(T(java.time.ZoneId).of('UTC'))
+                          .withZoneSameInstant(T(java.time.ZoneId).of('Asia/Seoul')), 'yyyy-MM-dd HH:mm')}">작성일</span>
+      </div>
+
+      <div th:if="${post.modifydate != null}" class="meta-dates">
+        <div>수정일</div>
+        <div th:text="${#temporals.format(post.modifydate.atZone(T(java.time.ZoneId).of('UTC'))
+                          .withZoneSameInstant(T(java.time.ZoneId).of('Asia/Seoul')), 'yyyy-MM-dd HH:mm')}"></div>
+      </div>
+    </div>
+
+    <!-- 추천/비추천/수정/삭제 -->
+    <div class="my-3 action-buttons">
+      <a href="javascript:void(0);"
+         th:data-uri="@{'/post/' + ${bt.name().toLowerCase()} + '/vote/' + ${post.id}}"
+         class="recommend btn btn-sm btn-outline-secondary"
+         sec:authorize="isAuthenticated()">
+        추천
+        <span class="badge rounded-pill bg-success" th:text="${#lists.size(post.voter)}"></span>
+      </a>
+
+      <a href="javascript:void(0);"
+         th:data-uri="@{'/post/' + ${bt.name().toLowerCase()} + '/novote/' + ${post.id}}"
+         class="notrecommend btn btn-sm btn-outline-secondary"
+         sec:authorize="isAuthenticated()">
+        비추천
+        <span class="badge rounded-pill bg-danger" th:text="${#lists.size(post.novoter)}"></span>
+      </a>
+
+      <a th:href="@{'/post/' + ${bt.name().toLowerCase()} + '/modify/' + ${post.id}}"
+         class="btn btn-sm btn-outline-secondary"
+         sec:authorize="isAuthenticated()"
+         th:if="${post.writer != null and post.writer.username == #authentication.getPrincipal().getUsername()}">
+        수정
+      </a>
+
+      <a href="javascript:void(0);"
+         th:data-uri="@{'/post/' + ${bt.name().toLowerCase()} + '/delete/' + ${post.id}}"
+         class="delete btn btn-sm btn-outline-secondary"
+         sec:authorize="isAuthenticated()"
+         th:if="${post.writer != null and post.writer.username == #authentication.getPrincipal().getUsername()}">
+        삭제
+      </a>
+    </div>
+  </div>
+
+  <!-- 댓글 영역 -->
+  <h5 class="comment-section-title border-bottom my-3 py-2"
+      th:text="|${#lists.size(post.commentList)}개의 댓글이 있습니다.|">
+    댓글 갯수
+  </h5>
+
+  <div class="comment-section">
+    <div class="comment-card" th:each="comment : ${post.commentList}">
+      <a th:id="|comment_${comment.id}|"></a>
+      <div class="comment-content" th:text="${comment.content}" style="white-space: pre-line;">
+        댓글 내용
       </div>
 
       <div class="badge-wrapper mt-3">
         <div class="meta-author">
-          <span th:if="${post.writer != null}" th:text="${post.writer.username}"></span><br />
-          <span th:text="${#temporals.format(post.createdate.atZone(T(java.time.ZoneId).of('UTC'))
-                                                .withZoneSameInstant(T(java.time.ZoneId).of('Asia/Seoul')),
-                                                'yyyy-MM-dd HH:mm')}">질문등록일</span>
+          <span th:if="${comment.writer != null}" th:text="${comment.writer.username}"></span><br />
+          <span th:text="${#temporals.format(comment.createdate.atZone(T(java.time.ZoneId).of('UTC'))
+                                .withZoneSameInstant(T(java.time.ZoneId).of('Asia/Seoul')), 'yyyy-MM-dd HH:mm')}">
+            작성일
+          </span>
         </div>
 
-        <div th:if="${post.modifydate != null}" class="meta-dates">
-          <div>질문 수정 일시</div>
-          <div th:text="${#temporals.format(post.modifydate.atZone(T(java.time.ZoneId).of('UTC'))
-                                                .withZoneSameInstant(T(java.time.ZoneId).of('Asia/Seoul')),
-                                                'yyyy-MM-dd HH:mm')}"></div>
+        <div th:if="${comment.modifydate != null}" class="meta-dates">
+          <div>수정일</div>
+          <div th:text="${#temporals.format(comment.modifydate.atZone(T(java.time.ZoneId).of('UTC'))
+                                .withZoneSameInstant(T(java.time.ZoneId).of('Asia/Seoul')), 'yyyy-MM-dd HH:mm')}">
+          </div>
         </div>
       </div>
 
-
       <div class="my-3 action-buttons">
-        <!-- 질문 추천 버튼 -->
-        <a href="javascript:void(0);" th:data-uri="@{|/post/vote/${post.id}|}" class="recommend btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()">
+        <a href="javascript:void(0);"
+           th:data-uri="@{'/comment/' + ${bt.name().toLowerCase()} + '/vote/' + ${comment.id}}"
+           class="recommend btn btn-sm btn-outline-secondary"
+           sec:authorize="isAuthenticated()">
           추천
-          <span class="badge rounded-pill bg-success" th:text="${#lists.size(post.voter)}"></span>
+          <span class="badge rounded-pill bg-success" th:text="${#lists.size(comment.voter)}"></span>
         </a>
 
-        <!-- 질문 비추천 버튼 -->
-        <a href="javascript:void(0);" th:data-uri="@{|/post/novote/${post.id}|}" class="notrecommend btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()">
+        <a href="javascript:void(0);"
+           th:data-uri="@{'/comment/' + ${bt.name().toLowerCase()} + '/novote/' + ${comment.id}}"
+           class="notrecommend btn btn-sm btn-outline-secondary"
+           sec:authorize="isAuthenticated()">
           비추천
-          <span class="badge rounded-pill bg-danger" th:text="${#lists.size(post.novoter)}"></span>
+          <span class="badge rounded-pill bg-danger" th:text="${#lists.size(comment.novoter)}"></span>
         </a>
 
-        <!-- 수정 버튼 -->
-        <a th:href="@{|/post/modify/${post.id}|}" class="btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()" th:if="${post.writer != null and post.writer.username == #authentication.getPrincipal().getUsername()}">
+        <a th:href="@{'/comment/' + ${bt.name().toLowerCase()} + '/modify/' + ${comment.id}}"
+           class="btn btn-sm btn-outline-secondary"
+           sec:authorize="isAuthenticated()"
+           th:if="${comment.writer != null and comment.writer.username == #authentication.getPrincipal().getUsername()}">
           수정
         </a>
 
-        <!-- 삭제 버튼 -->
-        <a href="javascript:void(0);" th:data-uri="@{|/post/delete/${post.id}|}" class="delete btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()" th:if="${post.writer != null and post.writer.username == #authentication.getPrincipal().getUsername()}">
+        <a href="javascript:void(0);"
+           th:data-uri="@{'/comment/' + ${bt.name().toLowerCase()} + '/delete/' + ${comment.id}}"
+           class="delete btn btn-sm btn-outline-secondary"
+           sec:authorize="isAuthenticated()"
+           th:if="${comment.writer != null and comment.writer.username == #authentication.getPrincipal().getUsername()}">
           삭제
         </a>
       </div>
     </div>
-
-    <!-- 댓글 영역 제목 -->
-    <h5 class="comment-section-title border-bottom my-3 py-2" th:text="|${#lists.size(post.commentList)}개의 답변이 있습니다.|">
-      답변 갯수
-    </h5>
-
-    <!-- 댓글 목록 영역 -->
-    <div class="comment-section">
-      <div class="comment-card" th:each="comment : ${post.commentList}">
-        <a th:id="|comment_${comment.id}|"></a>
-        <div class="comment-content" th:text="${comment.content}" style="white-space: pre-line;">
-          답변글 내용
-        </div>
-
-        <div class="badge-wrapper mt-3">
-          <div class="meta-author">
-            <span th:if="${comment.writer != null}" th:text="${comment.writer.username}"></span><br />
-            <span th:text="${#temporals.format(comment.createdate.atZone(T(java.time.ZoneId).of('UTC'))
-                                                .withZoneSameInstant(T(java.time.ZoneId).of('Asia/Seoul')),
-                                                'yyyy-MM-dd HH:mm')}">작성일</span>
-          </div>
-
-          <div th:if="${comment.modifydate != null}" class="meta-dates">
-            <div>답변 수정 일시</div>
-            <div th:text="${#temporals.format(comment.modifydate.atZone(T(java.time.ZoneId).of('UTC'))
-                                                .withZoneSameInstant(T(java.time.ZoneId).of('Asia/Seoul')),
-                                                'yyyy-MM-dd HH:mm')}"></div>
-          </div>
-        </div>
-
-        <div class="my-3 action-buttons">
-          <!-- 답변 추천 버튼 -->
-          <a href="javascript:void(0);" th:data-uri="@{|/comment/vote/${comment.id}|}" class="recommend btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()">
-            추천
-            <span class="badge rounded-pill bg-success" th:text="${#lists.size(comment.voter)}"></span>
-          </a>
-
-          <!-- 답변 비추천 버튼 -->
-          <a href="javascript:void(0);" th:data-uri="@{|/comment/novote/${comment.id}|}" class="notrecommend btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()">
-            비추천
-            <span class="badge rounded-pill bg-danger" th:text="${#lists.size(comment.novoter)}"></span>
-          </a>
-
-          <!-- 답변 수정 버튼 -->
-          <a th:href="@{|/comment/modify/${comment.id}|}" class="btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()" th:if="${comment.writer != null and comment.writer.username == #authentication.getPrincipal().getUsername()}">
-            수정
-          </a>
-
-          <!-- 답변 삭제 버튼 -->
-          <a href="javascript:void(0);" th:data-uri="@{|/comment/delete/${comment.id}|}" class="delete btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()" th:if="${comment.writer != null and comment.writer.username == #authentication.getPrincipal().getUsername()}">
-            삭제
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <!-- 답변 등록 폼 -->
-    <form th:action="@{|/comment/create/${post.id}|}" th:object="${commentForm}" method="post" class="my-3 comment-form">
-      <!-- 유효성 체크 에러표시 -->
-      <div th:replace="~{form_errors :: formErrorsFragment}"></div>
-
-      <textarea rows="10" cols="40" sec:authorize="isAnonymous()" disabled th:field="*{content}" class="form-control"></textarea>
-
-      <textarea rows="10" cols="40" sec:authorize="isAuthenticated()" th:field="*{content}" class="form-control"></textarea>
-
-      <input type="submit" value="답변 등록" class="btn btn-primary my-2">
-    </form>
-
   </div>
 
-  <!-- 자바스크립트 -->
-  <script layout:fragment="script" type="text/javascript">
-    const delete_elements = document.getElementsByClassName("delete");
-    Array.from(delete_elements).forEach(function (element) {
-      element.addEventListener('click', function () {
-        if (confirm("정말로 삭제하시겠습니까?")) {
-          location.href = this.dataset.uri;
-        };
-      });
+  <!-- 댓글 작성 -->
+  <form th:action="@{'/comment/create/' + ${bt.name().toLowerCase()} + '/' + ${post.id}}"
+        th:object="${commentForm}" method="post" class="my-3 comment-form">
+    <div th:replace="~{form_errors :: formErrorsFragment}"></div>
+
+    <!-- 로그인 여부에 따른 작성 가능 여부 -->
+    <textarea rows="10" cols="40"
+              sec:authorize="isAnonymous()" disabled
+              th:field="*{content}" class="form-control"></textarea>
+
+    <textarea rows="10" cols="40"
+              sec:authorize="isAuthenticated()"
+              th:field="*{content}" class="form-control"></textarea>
+
+    <input type="submit" value="댓글 등록" class="btn btn-primary my-2">
+  </form>
+
+</div>
+
+<!-- JS 이벤트 처리 -->
+<script layout:fragment="script" type="text/javascript">
+  const delete_elements = document.getElementsByClassName("delete");
+  Array.from(delete_elements).forEach(function (element) {
+    element.addEventListener('click', function () {
+      if (confirm("정말로 삭제하시겠습니까?")) {
+        location.href = this.dataset.uri;
+      }
     });
-    const recommend_elements = document.getElementsByClassName("recommend");
-    Array.from(recommend_elements).forEach(function (element) {
-      element.addEventListener('click', function () {
-        if (confirm("정말로 추천하시겠습니까?")) {
-          location.href = this.dataset.uri;
-        };
-      });
+  });
+
+  const recommend_elements = document.getElementsByClassName("recommend");
+  Array.from(recommend_elements).forEach(function (element) {
+    element.addEventListener('click', function () {
+      if (confirm("정말로 추천하시겠습니까?")) {
+        location.href = this.dataset.uri;
+      }
     });
-    const notrecommend_elements = document.getElementsByClassName("notrecommend");
-    Array.from(notrecommend_elements).forEach(function (element) {
-      element.addEventListener('click', function () {
-        if (confirm("정말로 비추천하시겠습니까?")) {
-          location.href = this.dataset.uri;
-        };
-      });
+  });
+
+  const notrecommend_elements = document.getElementsByClassName("notrecommend");
+  Array.from(notrecommend_elements).forEach(function (element) {
+    element.addEventListener('click', function () {
+      if (confirm("정말로 비추천하시겠습니까?")) {
+        location.href = this.dataset.uri;
+      }
     });
-  </script>
+  });
+</script>
 </html>

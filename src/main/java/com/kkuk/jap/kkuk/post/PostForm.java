@@ -19,4 +19,6 @@ public class PostForm {
 	@Size(max = 499, message = "내용은 최대 500글자 까지입니다.")
 	private String content;
 	
+	private BoardType bt;
+	
 }

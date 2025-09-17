@@ -11,6 +11,8 @@ import com.kkuk.jap.kkuk.user.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -54,6 +56,7 @@ public class Post {
     private LocalDateTime createdate;
 	
     @ManyToOne
+    @JoinColumn(name = "writer_id")
     private User writer;
     
     private LocalDateTime modifydate;
@@ -72,4 +75,8 @@ public class Post {
 	 @ManyToOne
 	 @JoinColumn(name = "user_id")
 	 private User user;
+	 
+	 @Enumerated(EnumType.STRING)
+	 @Column(name = "bt",nullable = false)
+	 private BoardType bt;
 }

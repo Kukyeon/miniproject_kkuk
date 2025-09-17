@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -45,12 +46,13 @@ public class PostService {
 			throw new DataNotFoundException("post not found");
 		}
 	}
-	public void create(String subject, String content, User user) { // 글쓰기
+	public void create(String subject, String content, User user, BoardType bt) { // 글쓰기
 		Post post = new Post();
 		post.setSubject(subject);
 		post.setContent(content);
 		post.setCreatedate(LocalDateTime.now());
 		post.setWriter(user);
+		post.setBt(bt);
 		postRepository.save(post);
 	}
 	
@@ -79,20 +81,39 @@ public class PostService {
 		postRepository.save(post);
 	}
 	
-	public Page<Post> getPagePost(int page, String kw){
-		
-		int size = 10;
-		int startRow = page * size;
-		int endRow = startRow + size;
-		
-		List<Post> pagePostList = postRepository.findPostWithPaging(startRow, endRow);
-		
-		List<Post> searchPostList = postRepository.searchPostWithPaging(kw, startRow, endRow);
-		int totalSearchPost = postRepository.countSearchResult(kw);
-		
-		Page<Post> pageingList = new PageImpl<>(searchPostList, PageRequest.of(page, size), totalSearchPost);
-		return pageingList;
+	public Page<Post> getPagePost(int page, String kw, BoardType bt) {
+	    int size = 10;
+	    int startRow = page * size;
+	    int endRow = startRow + size;
+
+	    List<Post> postList;
+	    int totalCount;
+
+	    if (kw == null || kw.trim().isEmpty()) {
+	        postList = postRepository.findPostWithPaging(bt.toString(), startRow, endRow);
+	        // 게시판 목록 총 개수 계산
+	        totalCount = (int) postRepository.count(); // 모든 게시글 대상
+	    } else {
+	        postList = postRepository.searchPostWithPaging(bt.toString(), kw, startRow, endRow);
+	        totalCount = postRepository.countSearchResult(bt.toString(), kw);
+	    }
+
+	    return new PageImpl<>(postList, PageRequest.of(page, size), totalCount);
 	}
+//	public Page<Post> getPagePost(int page, String kw){
+//		
+//		int size = 10;
+//		int startRow = page * size;
+//		int endRow = startRow + size;
+//		
+//		List<Post> pagePostList = postRepository.findPostWithPaging(startRow, endRow);
+//		
+//		List<Post> searchPostList = postRepository.searchPostWithPaging(kw, startRow, endRow);
+//		int totalSearchPost = postRepository.countSearchResult(kw);
+//		
+//		Page<Post> pageingList = new PageImpl<>(searchPostList, PageRequest.of(page, size), totalSearchPost);
+//		return pageingList;
+//	}
 	
 	private Specification<Post> search(String kw){
 		
